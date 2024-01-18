@@ -1,0 +1,20 @@
+{
+    "iss": "https://server.example.com",
+    "jti": "a-123",
+    "sub": "24400320",
+    "upn": "jdoe@example.com",
+    "preferred_username": "jdoe",
+    "aud": "s6BhdRkqt3",
+    "exp": 2019686400.5,
+    "iat": 1704067200.1,
+    "auth_time": 1704067200.9,
+    "roles": [
+        "Echoer"
+    ],
+    "groups": [
+        "Echoer",
+        "Tester",
+        "group1",
+        "group2"
+    ]
+}

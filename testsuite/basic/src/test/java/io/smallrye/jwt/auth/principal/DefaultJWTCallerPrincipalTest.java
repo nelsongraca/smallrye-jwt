@@ -7,9 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Set;
 
+import io.smallrye.jwt.build.Jwt;
 import org.eclipse.microprofile.jwt.Claims;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.jwt.tck.util.TokenUtils;
-import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.JwtContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,22 +61,14 @@ class DefaultJWTCallerPrincipalTest {
     }
 
     @Test
-    void claimsWithDecimalValues() {
-        Double exp = 1311281970.5;
-        Double iat = 1311280970.5;
+    void timeClaimsWithDecimalValues() throws Exception {
+        String jwtString = Jwt.claims("/TokenTimeClaims.json").sign("/privateKey.pem");
+        JWTAuthContextInfo config = new JWTAuthContextInfo("/publicKey.pem", "https://server.example.com");
+        JWTParser parser = new DefaultJWTParser(config);
+        JsonWebToken jwt = parser.parse(jwtString);
 
-        final JwtClaims claims = context.getJwtClaims();
-        claims.setClaim(Claims.exp.name(), exp);
-        claims.setClaim(Claims.iat.name(), iat);
-        DefaultJWTCallerPrincipal principal = new DefaultJWTCallerPrincipal(claims);
-
-        Long expClaim = principal.getExpirationTime();
-        Long iatClaim = principal.getIssuedAtTime();
-
-        assertNotNull(expClaim);
-        assertNotNull(iatClaim);
-
-        assertEquals(exp.longValue(), expClaim);
-        assertEquals(iat.longValue(), iatClaim);
+        assertEquals(2019686400, jwt.getExpirationTime());
+        assertEquals(1704067200, jwt.getIssuedAtTime());
+        assertEquals(1704067200, jwt.<Long>getClaim(Claims.auth_time.name()));
     }
 }
